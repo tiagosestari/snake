@@ -4,11 +4,11 @@ import os
 import turtle as tr
 import time
 import random
-
+import winsound
 #variables
-delay = 0.2
+delay = 0.3
 snake_speed = 20
-
+score = 0
 #Setting up the screen
 wn = tr.Screen()
 wn.title("Snake Game by @TiagoS")
@@ -33,6 +33,15 @@ food.shape("square")
 food.color("red")
 food.penup() #so that it doesn't draw anything
 food.goto(0,100)
+
+#score
+pen = tr.Turtle()
+pen.speed(0)
+pen.color("white")
+pen.penup()
+pen.hideturtle()
+pen.goto(0,250)
+pen.write("Score: 0", align="center", font=("Courier",24,"normal"))
 
 #bodyparts
 body_parts = []
@@ -63,6 +72,16 @@ def move():
         x = head.xcor()
         head.setx(x+snake_speed)
 
+def improve_difficulty():
+    global delay
+    if delay > 0.02:
+        delay = delay - 0.02
+    print(delay)
+def restart_difficulty():
+    global delay
+    delay = 0.5
+    print(delay)
+
 #listener
 wn.listen()
 wn.onkeypress(go_up, "w")
@@ -88,12 +107,17 @@ while True:
         for body_part in body_parts:
             body_part.goto(1000,1000)
         body_parts.clear()
+        score = 0
+        pen.clear()
+        pen.write("Score: {}".format(score), align="center", font=("Courier",24,"normal"))
+        restart_difficulty()
 
     #Check for collision with food
     if head.distance(food) < 20:
         x = random.randint(-290,290)
         y = random.randint(-290,290)
         food.goto(x,y)
+        winsound.Beep(600,300)
 
         #Add bodyparts
         #create new body part
@@ -103,6 +127,11 @@ while True:
         new_segment.color("grey")
         new_segment.penup()
         body_parts.append(new_segment)
+
+        score = score + 9
+        pen.clear()
+        pen.write("Score: {}".format(score), align="center", font=("Courier",24,"normal"))
+        improve_difficulty()
 
     #make body parts follow the head
     for index in range(len(body_parts)-1,0,-1):
@@ -127,6 +156,10 @@ while True:
             for body_part in body_parts:
                 body_part.goto(1000,1000)
             body_parts.clear()
+            score = 0
+            pen.clear()
+            pen.write("Score: {}".format(score), align="center", font=("Courier",24,"normal"))
+            restart_difficulty()
 
     time.sleep(delay)
 
